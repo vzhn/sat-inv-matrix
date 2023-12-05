@@ -41,3 +41,13 @@ fun execZ3(cnf: List<List<Int>>): Z3Result {
     process.errorStream.close()
   }  
 }
+
+fun Map<UInt, Boolean>.toVariableAssignments(): Map<Variable, Boolean> {
+  val result = mutableMapOf<Variable, Boolean>()
+  
+  for ((index, value) in this) {
+    result[Variable(index)] = value
+  }
+  
+  return result
+}
