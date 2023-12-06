@@ -13,6 +13,7 @@ class AdderSubtractorTest {
     TestData(3, 2, 1, true),
     TestData(1, 1, 0, true)
   )
+  
   @Test
   fun test() {
     val ctx = Context()
@@ -22,7 +23,6 @@ class AdderSubtractorTest {
     val b = ctx.newVariables(bitWidth)
     val k = ctx.newVariable()
     val (sums, c) = ctx.addAdderSubtractor(a, b, k)
-//    ctx.assign(c, false)
     
     for ((ai, bi, ci, ki) in data) {
       ctx.push()
@@ -38,11 +38,7 @@ class AdderSubtractorTest {
 
       val vasms = assignments.toVariableAssignments()
       
-      
-      val sum = decodeInt(sums, vasms)
-      println("sum = $sum, carry = ${vasms[c]}")
-      
-      assertEquals(ci, sum)
+      assertEquals(ci, decodeInt(sums, vasms))
       
       ctx.pop()
     }

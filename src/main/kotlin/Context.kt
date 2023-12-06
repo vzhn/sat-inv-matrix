@@ -52,8 +52,173 @@ class Context {
     val c2 = addXor(c1, ic)    
     val c3 = addAnd(ia, ib)
     val c4 = addAnd(c1, ic)    
-    val c5 = addOr(c3, c4)    
+    val c5 = addOr(c3, c4)
     return FullAdderOutputs(c2, c5)
+  }
+  
+  fun addHalfAdder(ia: Variable, ib: Variable): HalfAdderOutputs {
+    val c1 = addXnor(ia, ib)
+    val c2 = addAnd(ia, ib)
+    return HalfAdderOutputs(c1, c2)
+  }
+
+  fun addBaughWooleyCell(si: Variable, ci: Variable, a: Variable, b: Variable, type: BaughWooleyType): FullAdderOutputs {
+    val g = (if (type == BaughWooleyType.WHITE) ::addAnd else ::addNand)(a, b)
+    return addFullAdder(g, si, ci)
+  }
+  
+  fun add4bitmultiplier(ainputs: List<Variable>, binputs: List<Variable>): MultiplicationOutputs {
+    if (ainputs.size != binputs.size) throw AssertionError()
+
+    val falseConst = newVariable()
+    assign(falseConst, false)
+
+    val trueConst = newVariable()
+    assign(trueConst, true)
+    
+    val ands = mutableMapOf<Pair<Int, Int>, Variable>()
+    val fas = mutableMapOf<Pair<Int, Int>, FullAdderOutputs>()
+
+    for (bi in binputs.indices) {
+      for (ai in ainputs.indices) {
+        val isFirstRow = bi == 0
+        val isSecondRow = bi == 1
+
+        val isLastCol = ai == ainputs.lastIndex
+        val isPreLastCol = ai == ainputs.lastIndex - 1
+
+        val isLastRow = bi == binputs.lastIndex
+        val a = ainputs[ai]
+        val b = binputs[bi]
+        val pos = bi to ai
+
+        ands[pos] = when {
+          isLastRow && !isLastCol -> addAnd(addNot(a), b)
+          isLastCol && !isLastRow -> addAnd(a, addNot(b))
+          else -> addAnd(a, b)
+        }
+
+        if (!isFirstRow && !isLastCol) {
+          val leftTopPos = bi - 1 to ai + 1
+          val leftTop = if (isPreLastCol || isSecondRow) {
+            ands.getValue(leftTopPos)
+          } else {
+            fas.getValue(leftTopPos).s
+          }
+
+          val carry = if (isSecondRow) {
+            falseConst
+          } else {
+            fas.getValue(bi - 1 to ai).c
+          }
+
+          fas[pos] = addFullAdder(leftTop, carry, ands.getValue(bi to ai))
+        }
+      }
+    }
+
+    val leftBottom = binputs.lastIndex to ainputs.lastIndex
+    fas[leftBottom] = addFullAdder(addNot(binputs.last()), addNot(ainputs.last()), ands.getValue(leftBottom))
+
+    val f4x = addFullAdder(fas.getValue(binputs.lastIndex to 0).s, ainputs.last(), binputs.last())
+    var c = f4x.c
+    
+    for (i in ainputs.indices) {
+      val leftTop = if (i != ainputs.lastIndex) {
+        fas.getValue(binputs.lastIndex to i + 1).s
+      } else {
+        trueConst
+      }
+      
+      val top = fas.getValue(binputs.lastIndex to i).c
+      val fa = addFullAdder(leftTop, top, c)
+      fas[binputs.lastIndex + 1 to i] = fa
+      c = fa.c
+    }
+
+    val muls = mutableListOf<Variable>()
+    muls.add(ands.getValue(0 to 0))
+    
+    for (i in 1..<binputs.lastIndex) {
+      muls.add(fas.getValue(i to 0).s)
+    }
+    
+    muls.add(f4x.s)
+    
+    for (i in 0..<ainputs.lastIndex) {
+      muls.add(fas.getValue(binputs.lastIndex + 1 to i).s)
+    }
+    
+    return MultiplicationOutputs(muls, c)
+  }
+  
+  /*
+   * Baugh-Wooley multiplier
+   */
+  fun addMultiplier(ainputs: List<Variable>, binputs: List<Variable>): MultiplicationOutputs {
+    val muls = mutableListOf<Variable>()
+    
+    val falseConst = newVariable()
+    assign(falseConst, false)
+    
+    val trueConst = newVariable()
+    assign(trueConst, true)
+
+    val bwCells = mutableListOf<MutableList<FullAdderOutputs>>()
+    
+    binputs.forEachIndexed { bIndex, bv ->
+      bwCells.add(mutableListOf())
+      
+      ainputs.forEachIndexed { aIndex, av -> 
+        val leftTop by lazy { bwCells[bwCells.lastIndex - 1][aIndex + 1] }
+        val top by lazy { bwCells[bwCells.lastIndex - 1][aIndex] }
+
+        val isLastColumn = aIndex == ainputs.lastIndex
+        val isLastRow = bIndex == binputs.lastIndex
+        
+        val type: BaughWooleyType = if ((isLastColumn && !isLastRow) || (isLastRow && !isLastColumn)) {
+          BaughWooleyType.GRAY
+        } else {
+          BaughWooleyType.WHITE
+        }
+        
+        val si = if (bIndex == 0 || isLastColumn) {
+          falseConst
+        } else {
+          leftTop.s
+        }
+        
+        val ci = if (bIndex == 0) {
+          falseConst
+        } else {
+          top.c
+        }
+        val cell = addBaughWooleyCell(si, ci, av, bv, type)
+        bwCells.last().add(cell)
+        
+        if (aIndex == 0) {
+          muls.add(cell.s)
+        }
+      }
+    }
+
+    var c = falseConst
+    ainputs.forEachIndexed { aIndex, av ->
+      val top = bwCells.last()
+      
+      val topLeft = if (aIndex != ainputs.lastIndex) {
+        top[aIndex + 1].s
+      } else {
+        trueConst
+      }
+      
+      val b = top[aIndex].s
+      val fullAdder = addFullAdder(topLeft, b, c)
+      muls.add(fullAdder.s)
+      c = fullAdder.c
+    }
+
+    return MultiplicationOutputs(muls, c)
   }
   
   fun addAdderSubtractor(ainputs: List<Variable>, binputs: List<Variable>, k: Variable): AdderSubtractorOutputs {
@@ -62,8 +227,7 @@ class Context {
     var cin = k
     
     for ((a, b) in ainputs.zip(binputs)) {
-      val x = addXor(k, b)
-      val (s, c) = addFullAdder(a, x, cin)
+      val (s, c) = addFullAdder(a, addXor(k, b), cin)
       
       sums.add(s)
       cin = c
@@ -182,4 +346,7 @@ class Context {
 }
 
 data class FullAdderOutputs(val s: Variable, val c: Variable)
+data class HalfAdderOutputs(val s: Variable, val c: Variable)
 data class AdderSubtractorOutputs(val sums: List<Variable>, val c: Variable)
+data class MultiplicationOutputs(val a: List<Variable>, val c: Variable)
+enum class BaughWooleyType { WHITE, GRAY }
