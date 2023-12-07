@@ -11,7 +11,7 @@ class MultiplierTest {
     
     ctx.assignInt(a, 3)
     ctx.assignInt(b, 42)
-    val (c, carry) = ctx.add4bitmultiplier(a, b)
+    val (c) = ctx.addMultiplier(a, b)
     
     val result = execZ3(ctx.getCnf())
     assertIs<Z3Result.Sat>(result)

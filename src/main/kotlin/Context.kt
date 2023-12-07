@@ -65,8 +65,11 @@ class Context {
     val g = (if (type == BaughWooleyType.WHITE) ::addAnd else ::addNand)(a, b)
     return addFullAdder(g, si, ci)
   }
-  
-  fun add4bitmultiplier(ainputs: List<Variable>, binputs: List<Variable>): MultiplicationOutputs {
+
+  /*
+  * Baugh-Wooley multiplier
+  */
+  fun addMultiplier(ainputs: List<Variable>, binputs: List<Variable>): MultiplicationOutputs {
     if (ainputs.size != binputs.size) throw AssertionError()
 
     val falseConst = newVariable()
@@ -148,75 +151,6 @@ class Context {
       muls.add(fas.getValue(binputs.lastIndex + 1 to i).s)
     }
     
-    return MultiplicationOutputs(muls, c)
-  }
-  
-  /*
-   * Baugh-Wooley multiplier
-   */
-  fun addMultiplier(ainputs: List<Variable>, binputs: List<Variable>): MultiplicationOutputs {
-    val muls = mutableListOf<Variable>()
-    
-    val falseConst = newVariable()
-    assign(falseConst, false)
-    
-    val trueConst = newVariable()
-    assign(trueConst, true)
-
-    val bwCells = mutableListOf<MutableList<FullAdderOutputs>>()
-    
-    binputs.forEachIndexed { bIndex, bv ->
-      bwCells.add(mutableListOf())
-      
-      ainputs.forEachIndexed { aIndex, av -> 
-        val leftTop by lazy { bwCells[bwCells.lastIndex - 1][aIndex + 1] }
-        val top by lazy { bwCells[bwCells.lastIndex - 1][aIndex] }
-
-        val isLastColumn = aIndex == ainputs.lastIndex
-        val isLastRow = bIndex == binputs.lastIndex
-        
-        val type: BaughWooleyType = if ((isLastColumn && !isLastRow) || (isLastRow && !isLastColumn)) {
-          BaughWooleyType.GRAY
-        } else {
-          BaughWooleyType.WHITE
-        }
-        
-        val si = if (bIndex == 0 || isLastColumn) {
-          falseConst
-        } else {
-          leftTop.s
-        }
-        
-        val ci = if (bIndex == 0) {
-          falseConst
-        } else {
-          top.c
-        }
-        val cell = addBaughWooleyCell(si, ci, av, bv, type)
-        bwCells.last().add(cell)
-        
-        if (aIndex == 0) {
-          muls.add(cell.s)
-        }
-      }
-    }
-
-    var c = falseConst
-    ainputs.forEachIndexed { aIndex, av ->
-      val top = bwCells.last()
-      
-      val topLeft = if (aIndex != ainputs.lastIndex) {
-        top[aIndex + 1].s
-      } else {
-        trueConst
-      }
-      
-      val b = top[aIndex].s
-      val fullAdder = addFullAdder(topLeft, b, c)
-      muls.add(fullAdder.s)
-      c = fullAdder.c
-    }
-
     return MultiplicationOutputs(muls, c)
   }
   
