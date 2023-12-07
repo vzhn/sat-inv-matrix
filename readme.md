@@ -50,8 +50,9 @@ Gives following output
 -1 2 3 4
 
 == cnf summary ==
-clauses count = 28817
+gates count = 28817
 variables count = 28705
+clauses count = 94145
 
 == z3 time ==
 168 millis
