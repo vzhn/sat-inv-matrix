@@ -2,10 +2,11 @@ This program implements inversion matrix with integer coefficients
 
 ## How it works
 * converting integers to bit-vectors in two's complement format
-* addition is implemented with boolean gates
+* addition is implemented with FullAdder primitives
 * multiplication is implemented with Baugh-Wooley circuit
 * Boolean circuits are converted to CNF with [Tseytin transformation](https://en.wikipedia.org/wiki/Tseytin_transformation)
 * CNF are solved with Z3 solver
+* **Note:** no control of integer overflow, but it could be implemented easily
 
 ## Details
 
