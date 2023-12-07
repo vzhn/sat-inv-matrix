@@ -5,7 +5,7 @@ Here I made implementation of integer coefficients matrix inversion
 * addition is implemented with FullAdder primitives
 * multiplication is implemented with Baugh-Wooley circuit
 * Boolean circuits are converted to CNF with [Tseytin transformation](https://en.wikipedia.org/wiki/Tseytin_transformation)
-* CNF are solved with Z3 solver
+* CNF are solved by Z3 solver
 * **Note:** no control of integer overflow, but it could be implemented easily
 
 ## Details
