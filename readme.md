@@ -31,7 +31,7 @@ for 4-bit signed integers
 Call program with following arguments provided:
 
 ```
- -bw,--bitwidth <arg>   bit width of data vectors (8 for example)
+ -bw,--bitwidth <arg>   bit width of bit vectors (8 for example)
  -c,--cnf <arg>         Path to file for output CNF in DIMACS format
  -m,--matrix <arg>      Path to text file with matrix
 ```
