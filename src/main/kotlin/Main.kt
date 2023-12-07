@@ -37,8 +37,9 @@ fun compute(bitWidth: Int, matrixFilePath: String, cnfFilePath: String?) {
   println()
 
   println("== cnf summary ==")
-  println("clauses count = ${ctx.clauses.size}")
+  println("gates count = ${ctx.gates.size}")
   println("variables count = ${ctx.variablesCount}")
+  println("cnf clauses count = ${cnf.size}")
   println()
 
   if (cnfFile != null) {

@@ -1,16 +1,16 @@
 class Context {
   private val variables = mutableSetOf<Variable>()
-  private val _clauses = mutableListOf<MutableList<Gate>>()
+  private val _gates = mutableListOf<MutableList<Gate>>()
 
-  val clauses get(): List<Gate> = _clauses.flatten()
+  val gates get(): List<Gate> = _gates.flatten()
   val variablesCount get() = variables.size
-  val clausesCount get() = clauses.size
+  val gatesCount get() = gates.size
 
   fun addClause(e: Gate) {
-    if (_clauses.isEmpty()) {
-      _clauses.add(mutableListOf(e))
+    if (_gates.isEmpty()) {
+      _gates.add(mutableListOf(e))
     } else {
-      _clauses.last().add(e)
+      _gates.last().add(e)
     }
   }
 
@@ -214,7 +214,7 @@ class Context {
    */
   fun getCnf(): MutableList<List<Int>> {
     val result = mutableListOf<List<Int>>()
-    for (cl in clauses) {
+    for (cl in gates) {
       when (cl) {
         is And -> {
           val a = cl.i1.index.toInt()
@@ -294,11 +294,11 @@ class Context {
   }
 
   fun push() {
-    _clauses.add(mutableListOf())
+    _gates.add(mutableListOf())
   }
   
   fun pop() {
-    _clauses.removeLast()
+    _gates.removeLast()
   }
 
   fun assignInt(a: List<Variable>, v: Int) {
