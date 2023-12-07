@@ -1,8 +1,7 @@
 class Context {
-  private var vcount = 0u
   private val variables = mutableSetOf<Variable>()
   private val _clauses = mutableListOf<MutableList<Gate>>()
-  
+
   val clauses get(): List<Gate> = _clauses.flatten()
 
   fun addClause(e: Gate) {
@@ -330,17 +329,8 @@ class Context {
   }
 
   fun assignInt(a: List<Variable>, v: Int) {
-    val uv: UInt = (if (v >= 0) v else (-(v + 1))).toUInt()
-    val isNegative = v < 0
-
-    val bits = mutableListOf<Boolean>()
-    for (b in 0..<a.size - 1) {
-      bits.add(((uv and (1u shl b)) != 0u) != isNegative)
-    }
-    bits.add(isNegative)
-    
-    for ((lit, value) in a.zip(bits)) {
-      assign(lit, value)
+    for ((variable, value) in a.zip(BVInt.fromInt(v, a.size).bits)) {
+      assign(variable, value)
     }
   }
 }
