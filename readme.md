@@ -1,4 +1,6 @@
-Here I made implementation of integer coefficients matrix inversion 
+Here I made implementation of integer coefficients matrix inversion
+
+**Note:** invertible matrix should have det = 1 or det = -1
 
 ## How it works
 * converting integers to bit-vectors in two's complement format
