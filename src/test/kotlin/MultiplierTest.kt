@@ -1,4 +1,5 @@
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 class MultiplierTest {
@@ -17,6 +18,6 @@ class MultiplierTest {
     assertIs<Z3Result.Sat>(result)
     
     val vasms = result.assignments.toVariableAssignments()
-    println(decodeInt(c, vasms))
+    assertEquals(126, decodeInt(c, vasms))
   }
 }

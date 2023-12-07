@@ -1,0 +1,1 @@
+typealias BVMatrix = SquareMatrix<List<Variable>>

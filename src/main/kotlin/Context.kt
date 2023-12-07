@@ -22,6 +22,48 @@ class Context {
     return (1u..n).map { newVariable() }
   }
 
+  fun newMatrix(n: UInt, bitWidth: UInt): BVMatrix {
+    val m = SquareMatrix<List<Variable>>(n)
+    for (rowIndex in 0u..<n) {
+      for (columnIndex in 0u..<n) {
+        m.set(rowIndex, columnIndex, newVariables(bitWidth))
+      }
+    }
+    return m
+  }
+
+  fun mulMatrix(a: BVMatrix, b: BVMatrix): BVMatrix {
+    if (a.n != b.n ) throw AssertionError("matrix dimensions does not match")
+    val n = a.n
+
+    val falseConst = newVariable()
+    assign(falseConst, false)
+
+    val c = BVMatrix(n)
+
+    for (row in 0u..<n) {
+      for (col in 0u..<n) {
+        var sum: List<Variable>? = null
+
+        for (k in 0u..<n) {
+          val av = a.get(row, k)
+          val bv = b.get(k, col)
+          val (cv) = addMultiplier(av, bv)
+
+          if (sum == null) {
+            sum = cv
+          } else {
+            val (s) = addAdderSubtractor(sum, cv, falseConst)
+            sum = s
+          }
+        }
+        c.set(row, col, sum!!)
+      }
+    }
+
+    return c
+  }
+
   private fun add(i1: Variable, i2: Variable, f3: (Variable, Variable, Variable) -> Gate): Variable {
     val o = newVariable()
     addClause(f3(i1, i2, o))
@@ -265,6 +307,17 @@ class Context {
   fun assignInt(a: List<Variable>, v: Int) {
     for ((variable, value) in a.zip(BVInt.fromInt(v, a.size).bits)) {
       assign(variable, value)
+    }
+  }
+
+  fun assignMatrix(m: BVMatrix, im: SquareMatrix<Int>) {
+    if (m.n != im.n) throw AssertionError("matrix dimensions does not match")
+    val n = m.n
+
+    for (row in 0u..<n) {
+      for (column in 0u..<n) {
+        assignInt(m.get(row, column), im.get(row, column))
+      }
     }
   }
 }

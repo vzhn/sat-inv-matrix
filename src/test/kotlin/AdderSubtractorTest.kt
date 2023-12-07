@@ -10,6 +10,7 @@ class AdderSubtractorTest {
     TestData(3, 2, 5, false),
     TestData(-3, -2, -5, false),
     TestData(-3, 2, -1, false),
+    TestData(42, 43, 85, false),
     TestData(3, 2, 1, true),
     TestData(1, 1, 0, true)
   )
@@ -18,7 +19,7 @@ class AdderSubtractorTest {
   fun test() {
     val ctx = Context()
 
-    val bitWidth = 4u
+    val bitWidth = 8u
     val a = ctx.newVariables(bitWidth)
     val b = ctx.newVariables(bitWidth)
     val k = ctx.newVariable()
