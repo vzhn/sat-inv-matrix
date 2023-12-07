@@ -11,9 +11,13 @@ Here I made implementation of integer coefficients matrix inversion
 ## Details
 
 ### Addition circuit
+for 4-bit signed integers
+
 ![adder](assets/adder.png)
 
 ### Multiplication circuit
+for 4-bit signed integers
+
 *I have found typo in original paper, so here is fixed circuit*
 
 ![Baugh-Wooley multiplier](assets/baugh-wooley.png)
