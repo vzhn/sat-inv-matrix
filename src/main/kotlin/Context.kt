@@ -3,6 +3,8 @@ class Context {
   private val _clauses = mutableListOf<MutableList<Gate>>()
 
   val clauses get(): List<Gate> = _clauses.flatten()
+  val variablesCount get() = variables.size
+  val clausesCount get() = clauses.size
 
   fun addClause(e: Gate) {
     if (_clauses.isEmpty()) {
@@ -101,11 +103,6 @@ class Context {
     val c1 = addXnor(ia, ib)
     val c2 = addAnd(ia, ib)
     return HalfAdderOutputs(c1, c2)
-  }
-
-  fun addBaughWooleyCell(si: Variable, ci: Variable, a: Variable, b: Variable, type: BaughWooleyType): FullAdderOutputs {
-    val g = (if (type == BaughWooleyType.WHITE) ::addAnd else ::addNand)(a, b)
-    return addFullAdder(g, si, ci)
   }
 
   /*
@@ -326,4 +323,3 @@ data class FullAdderOutputs(val s: Variable, val c: Variable)
 data class HalfAdderOutputs(val s: Variable, val c: Variable)
 data class AdderSubtractorOutputs(val sums: List<Variable>, val c: Variable)
 data class MultiplicationOutputs(val a: List<Variable>, val c: Variable)
-enum class BaughWooleyType { WHITE, GRAY }

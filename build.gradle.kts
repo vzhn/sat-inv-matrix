@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("commons-cli:commons-cli:1.6.0")
 }
 
 tasks.test {
