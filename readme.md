@@ -1,4 +1,4 @@
-This program implements inversion matrix with integer coefficients
+Here I made implementation of integer coefficients matrix inversion 
 
 ## How it works
 * converting integers to bit-vectors in two's complement format
@@ -50,7 +50,7 @@ variables count = 28705
 == z3 time ==
 168 millis
 
-== result ==
+== output ==
 6 -5 12 -4
 -10 9 -21 7
 10 -9 22 -7

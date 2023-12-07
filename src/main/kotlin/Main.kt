@@ -60,7 +60,7 @@ fun compute(bitWidth: Int, matrixFilePath: String, cnfFilePath: String?) {
     is Z3Result.Sat -> {
       val variableAssignments = result.assignments.toVariableAssignments()
       val bi = b.decodeMatrix(variableAssignments)
-      println("== result ==")
+      println("== output ==")
       println(bi.toString(Int::toString))
     }
     Z3Result.Unsat -> System.err.println("Unsatisfiable")
