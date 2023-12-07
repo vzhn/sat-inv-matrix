@@ -35,12 +35,12 @@ class InvMatrixTest {
     val result = execZ3(ctx.getCnf())
     assertIs<Z3Result.Sat>(result)
 
+    val variableAssignments = result.assignments.toVariableAssignments()
     val bi = SquareMatrix<Int>(n)
     for (row in 0u..<n) {
       for (column in 0u..<n) {
-        val variableAssignments = result.assignments.toVariableAssignments()
-        val int = decodeInt(b.get(row, column), variableAssignments)
-        bi.set(row, column, int)
+        val v = decodeInt(b.get(row, column), variableAssignments)
+        bi.set(row, column, v)
       }
     }
 
