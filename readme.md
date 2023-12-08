@@ -65,7 +65,7 @@ clauses count = 94145
 -1 1 -3 1
 ```
 
-### Comparison
+#### Bonus: SAT solver comparison
 command:
 ```
 --bitwidth 16 --matrix matrix/10x10.txt --cnf out.cnf --solver [paste solver here]
