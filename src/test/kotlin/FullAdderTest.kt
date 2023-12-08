@@ -34,8 +34,8 @@ class FullAdderTest {
       
       val result = execZ3(ctx.getCnf())      
       assertIs<Z3Result.Sat>(result)
-      assertEquals(s, result.assignments.getValue(sv.index))
-      assertEquals(cout, result.assignments.getValue(coutv.index))
+      assertEquals(s, result.assignments.getValue(sv))
+      assertEquals(cout, result.assignments.getValue(coutv))
       
       ctx.pop()
     }

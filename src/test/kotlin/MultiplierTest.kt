@@ -16,8 +16,7 @@ class MultiplierTest {
     
     val result = execZ3(ctx.getCnf())
     assertIs<Z3Result.Sat>(result)
-    
-    val vasms = result.assignments.toVariableAssignments()
-    assertEquals(126, decodeInt(c, vasms))
+
+    assertEquals(126, decodeInt(c, result.assignments))
   }
 }

@@ -59,7 +59,7 @@ fun compute(bitWidth: Int, matrixFilePath: String, cnfFilePath: String?) {
 
   when (result) {
     is Z3Result.Sat -> {
-      val variableAssignments = result.assignments.toVariableAssignments()
+      val variableAssignments = result.assignments
       val bi = b.decodeMatrix(variableAssignments)
       println("== output ==")
       println(bi.toString(Int::toString))

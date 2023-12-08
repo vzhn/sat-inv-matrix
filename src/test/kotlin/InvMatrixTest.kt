@@ -35,7 +35,7 @@ class InvMatrixTest {
     val result = execZ3(ctx.getCnf())
     assertIs<Z3Result.Sat>(result)
 
-    val variableAssignments = result.assignments.toVariableAssignments()
+    val variableAssignments = result.assignments
     val bi = b.decodeMatrix(variableAssignments)
 
     assertEquals(SquareMatrix.parseIntMatrix(invData), bi)

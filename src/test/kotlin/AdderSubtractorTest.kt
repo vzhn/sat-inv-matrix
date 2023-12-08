@@ -36,10 +36,7 @@ class AdderSubtractorTest {
       assertIs<Z3Result.Sat>(satResult)
 
       val (assignments) = satResult
-
-      val vasms = assignments.toVariableAssignments()
-      
-      assertEquals(ci, decodeInt(sums, vasms))
+      assertEquals(ci, decodeInt(sums, assignments))
       
       ctx.pop()
     }

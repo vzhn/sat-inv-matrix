@@ -7,7 +7,7 @@ sealed class Z3Result {
   data object Unsat: Z3Result()
   data object Error: Z3Result()
   data class Sat(
-    val assignments: Map<UInt, Boolean>
+    val assignments: Map<Variable, Boolean>
   ): Z3Result()
 }
 
@@ -20,34 +20,21 @@ fun execZ3(cnf: List<List<Int>>): Z3Result {
     os.close()
 
     val inputStream = BufferedReader(InputStreamReader(process.inputStream))
-    val header = inputStream.readLine()
-    
-    return if (header.equals("s SATISFIABLE")) {
-      val body = inputStream.readLine()
-      val parts = body.split(" ")
-      val assignments = mutableMapOf<UInt, Boolean>()
-      for (v in parts.subList(1, parts.size).filterNot(String::isBlank).map(String::toInt)) {
-        assignments[v.absoluteValue.toUInt()] = v > 0
+    val parser = DimacsParser()
+    parser.parseLines(inputStream.readText())
+
+    if (parser.sat ?: return Z3Result.Error) {
+      val assignments = mutableMapOf<Variable, Boolean>()
+      for (iv in parser.assignments) {
+        assignments[Variable(iv.absoluteValue.toUInt())] = iv > 0
       }
-      Z3Result.Sat(assignments)
-    } else if (header.equals("s UNSATISFIABLE")) {
-      Z3Result.Unsat
+      return Z3Result.Sat(assignments)
     } else {
-      Z3Result.Error
+      return Z3Result.Unsat
     }
   } finally {
     process.inputStream.close()
     process.outputStream.close()
     process.errorStream.close()
   }  
-}
-
-fun Map<UInt, Boolean>.toVariableAssignments(): Map<Variable, Boolean> {
-  val result = mutableMapOf<Variable, Boolean>()
-  
-  for ((index, value) in this) {
-    result[Variable(index)] = value
-  }
-  
-  return result
 }
