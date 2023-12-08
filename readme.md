@@ -31,6 +31,7 @@ for 4-bit signed integers
 Call program with following arguments provided:
 
 ```
+ --solver               z3 | cadical | cryptominisat5 | kissat
  -bw,--bitwidth <arg>   bit width of bit vectors (8 for example)
  -c,--cnf <arg>         Path to file for output CNF in DIMACS format
  -m,--matrix <arg>      Path to text file with matrix
@@ -38,7 +39,7 @@ Call program with following arguments provided:
 
 Example
 ```
---bitwidth 8 --matrix matrix/4x4.txt --cnf out.cnf
+--solver cadical --bitwidth 8 --matrix matrix/4x4.txt --cnf out.cnf
 ```
 
 Gives following output
@@ -54,7 +55,7 @@ gates count = 28817
 variables count = 28705
 clauses count = 94145
 
-== z3 time ==
+== solver time ==
 168 millis
 
 == output ==
