@@ -64,3 +64,26 @@ clauses count = 94145
 10 -9 22 -7
 -1 1 -3 1
 ```
+
+### Comparison
+command `--bitwidth 16 --matrix matrix/10x10.txt --cnf out.cnf --solver [paste solver here]`
+
+```
+
+
+== matrix ==
+
+16 bit
+10x10 matrix
+
+== cnf summary ==
+gates count = 1677101
+variables count = 1675601
+cnf clauses count = 5555601
+
+== results ==
+kissat           6559 millis
+z3               10869 millis
+cadical          18543 millis
+cryptominisat5   24404 millis
+``
