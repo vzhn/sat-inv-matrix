@@ -66,11 +66,12 @@ clauses count = 94145
 ```
 
 ### Comparison
-command `--bitwidth 16 --matrix matrix/10x10.txt --cnf out.cnf --solver [paste solver here]`
-
+command:
+```
+--bitwidth 16 --matrix matrix/10x10.txt --cnf out.cnf --solver [paste solver here]
 ```
 
-
+```
 == matrix ==
 
 16 bit
