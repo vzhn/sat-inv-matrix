@@ -11,13 +11,14 @@ sealed class SATResult {
 
 enum class Solver(val command: String) {
   Z3("z3 -in -dimacs"),
-  CRYPTOMINISAT("cryptominisat5 --verb 0")
+  CRYPTOMINISAT("cryptominisat5 --verb 0"),
+  KISSAT("kissat"),
+  CADICAL("cadical")
 }
 
 fun execSolver(s: Solver, cnf: List<List<Int>>): SATResult {
   val r = Runtime.getRuntime()
   val process = r.exec(s.command)
-  // val process = r.exec("cryptominisat5 --verb 0")
   try {
     val os = PrintStream(process.outputStream)
     os.println(cnfToDimacs(cnf))

@@ -74,7 +74,7 @@ fun main(args: Array<String>) {
   val optionSolver = Option.builder("s")
     .longOpt("solver")
     .required().hasArg()
-    .desc("SAT solver: z3 | cryptominisat5")
+    .desc("SAT solver: z3 | cryptominisat5 | cadical | kissat")
     .build().also(options::addOption)
 
   val optionBitWidth = Option.builder("bw")
@@ -117,7 +117,9 @@ fun main(args: Array<String>) {
 
     val s = when (solver) {
       "z3" -> Solver.Z3
+      "cadical" -> Solver.CADICAL
       "cryptominisat5" -> Solver.CRYPTOMINISAT
+      "kissat" -> Solver.KISSAT
        else -> {
          System.err.println("unknown solver: '$solver', expected: z3, cryptominisat5")
          return
