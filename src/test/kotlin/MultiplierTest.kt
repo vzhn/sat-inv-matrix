@@ -14,8 +14,8 @@ class MultiplierTest {
     ctx.assignInt(b, 42)
     val (c) = ctx.addMultiplier(a, b)
     
-    val result = execZ3(ctx.getCnf())
-    assertIs<Z3Result.Sat>(result)
+    val result = execSolver(Solver.Z3, ctx.getCnf())
+    assertIs<SATResult.Sat>(result)
 
     assertEquals(126, decodeInt(c, result.assignments))
   }

@@ -32,8 +32,8 @@ class FullAdderTest {
       ctx.assign(bv, b)
       ctx.assign(cinv, cin)
       
-      val result = execZ3(ctx.getCnf())      
-      assertIs<Z3Result.Sat>(result)
+      val result = execSolver(Solver.Z3, ctx.getCnf())
+      assertIs<SATResult.Sat>(result)
       assertEquals(s, result.assignments.getValue(sv))
       assertEquals(cout, result.assignments.getValue(coutv))
       

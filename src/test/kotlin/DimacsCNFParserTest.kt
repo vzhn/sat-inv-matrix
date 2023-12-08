@@ -5,8 +5,8 @@ class DimacsCNFParserTest {
   private val dataSat = """
     c Total time (this thread) : 0.02        
     s SATISFIABLE
-    v -1 2 -3 
-    v -13 -14 
+    v -1 2 -3 0
+    v -13 -14 0
   """.trimIndent()
 
   private val dataUnsat = """

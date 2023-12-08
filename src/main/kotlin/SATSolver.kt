@@ -3,17 +3,21 @@ import java.io.InputStreamReader
 import java.io.PrintStream
 import kotlin.math.absoluteValue
 
-sealed class Z3Result {
-  data object Unsat: Z3Result()
-  data object Error: Z3Result()
-  data class Sat(
-    val assignments: Map<Variable, Boolean>
-  ): Z3Result()
+sealed class SATResult {
+  data object Unsat: SATResult()
+  data object Error: SATResult()
+  data class Sat(val assignments: Map<Variable, Boolean>): SATResult()
 }
 
-fun execZ3(cnf: List<List<Int>>): Z3Result {
+enum class Solver(val command: String) {
+  Z3("z3 -in -dimacs"),
+  CRYPTOMINISAT("cryptominisat5 --verb 0")
+}
+
+fun execSolver(s: Solver, cnf: List<List<Int>>): SATResult {
   val r = Runtime.getRuntime()
-  val process = r.exec("z3 -in -dimacs")  
+  val process = r.exec(s.command)
+  // val process = r.exec("cryptominisat5 --verb 0")
   try {
     val os = PrintStream(process.outputStream)
     os.println(cnfToDimacs(cnf))
@@ -23,14 +27,14 @@ fun execZ3(cnf: List<List<Int>>): Z3Result {
     val parser = DimacsParser()
     parser.parseLines(inputStream.readText())
 
-    if (parser.sat ?: return Z3Result.Error) {
+    if (parser.sat ?: return SATResult.Error) {
       val assignments = mutableMapOf<Variable, Boolean>()
       for (iv in parser.assignments) {
         assignments[Variable(iv.absoluteValue.toUInt())] = iv > 0
       }
-      return Z3Result.Sat(assignments)
+      return SATResult.Sat(assignments)
     } else {
-      return Z3Result.Unsat
+      return SATResult.Unsat
     }
   } finally {
     process.inputStream.close()

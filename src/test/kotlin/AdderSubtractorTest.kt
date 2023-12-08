@@ -32,8 +32,8 @@ class AdderSubtractorTest {
       ctx.assignInt(b, bi)
       ctx.assign(k, ki)
 
-      val satResult = execZ3(ctx.getCnf())
-      assertIs<Z3Result.Sat>(satResult)
+      val satResult = execSolver(Solver.Z3, ctx.getCnf())
+      assertIs<SATResult.Sat>(satResult)
 
       val (assignments) = satResult
       assertEquals(ci, decodeInt(sums, assignments))

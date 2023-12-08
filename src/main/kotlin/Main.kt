@@ -3,7 +3,7 @@ import java.io.File
 import java.io.PrintWriter
 import java.util.concurrent.TimeUnit
 
-fun compute(bitWidth: Int, matrixFilePath: String, cnfFilePath: String?) {
+fun compute(bitWidth: Int, matrixFilePath: String, cnfFilePath: String?, solver: Solver) {
   val matrixFile = File(matrixFilePath)
   val cnfFile = cnfFilePath?.let(::File)
 
@@ -49,28 +49,34 @@ fun compute(bitWidth: Int, matrixFilePath: String, cnfFilePath: String?) {
   }
 
   val start = System.nanoTime()
-  val result = execZ3(cnf)
+  val result = execSolver(solver, cnf)
   val deltaNanos = System.nanoTime() - start
   val timeMillis = TimeUnit.NANOSECONDS.toMillis(deltaNanos)
 
-  println("== z3 time ==")
+  println("== solver time ==")
   println("$timeMillis millis")
   println()
 
   when (result) {
-    is Z3Result.Sat -> {
+    is SATResult.Sat -> {
       val variableAssignments = result.assignments
       val bi = b.decodeMatrix(variableAssignments)
       println("== output ==")
       println(bi.toString(Int::toString))
     }
-    Z3Result.Unsat -> System.err.println("Unsatisfiable")
-    Z3Result.Error -> System.err.println("failure while calling z3")
+    SATResult.Unsat -> System.err.println("Unsatisfiable")
+    SATResult.Error -> System.err.println("failure while calling solver")
   }
 }
 
 fun main(args: Array<String>) {
   val options = Options()
+  val optionSolver = Option.builder("s")
+    .longOpt("solver")
+    .required().hasArg()
+    .desc("SAT solver: z3 | cryptominisat5")
+    .build().also(options::addOption)
+
   val optionBitWidth = Option.builder("bw")
     .longOpt("bitwidth")
     .required().hasArg()
@@ -97,6 +103,7 @@ fun main(args: Array<String>) {
     val matrixFile = cmd.getOptionValue(optionMatrix)
     val cnfFile = cmd.getOptionValue(optionCnf)
     val bitWidth = cmd.getOptionValue(optionBitWidth).toIntOrNull()
+    val solver = cmd.getOptionValue(optionSolver)
 
     if (bitWidth == null) {
       System.err.println("could not parse bit width")
@@ -108,7 +115,16 @@ fun main(args: Array<String>) {
       return
     }
 
-    compute(bitWidth, matrixFile, cnfFile)
+    val s = when (solver) {
+      "z3" -> Solver.Z3
+      "cryptominisat5" -> Solver.CRYPTOMINISAT
+       else -> {
+         System.err.println("unknown solver: '$solver', expected: z3, cryptominisat5")
+         return
+       }
+    }
+
+    compute(bitWidth, matrixFile, cnfFile, s)
   } catch (e: ParseException) {
     println(e.message)
     helper.printHelp("arguments", options)

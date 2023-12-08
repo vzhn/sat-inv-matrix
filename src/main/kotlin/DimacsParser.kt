@@ -25,6 +25,7 @@ class DimacsParser {
           .split(Pattern.compile("\\s+"))
           .filterNot(String::isBlank)
           .map(String::toInt)
+          .filterNot { it == 0 }
           .toCollection(assignments)
       }
       else -> throw ParseException("could not parse line: $line", 0)
