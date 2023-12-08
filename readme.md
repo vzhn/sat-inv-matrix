@@ -83,7 +83,7 @@ variables count = 1675601
 cnf clauses count = 5555601
 
 == results ==
-kissat           6559 millis
+kissat           6559  millis
 z3               10869 millis
 cadical          18543 millis
 cryptominisat5   24404 millis
