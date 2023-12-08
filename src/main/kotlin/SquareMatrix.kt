@@ -1,3 +1,5 @@
+import java.util.regex.Pattern
+
 class SquareMatrix<T>(val n: UInt) {
   val data = mutableMapOf<Pair<UInt, UInt>, T?>()
 
@@ -20,10 +22,10 @@ class SquareMatrix<T>(val n: UInt) {
     }
 
     fun parseIntMatrix(data: String): SquareMatrix<Int> {
-      val rows = data.lines().mapNotNull { line ->
+      val rows = data.lines().map(String::trim).filterNot(String::isBlank).mapNotNull { line ->
         if (line.isBlank()) null
         else {
-          line.split(" ")
+          line.split(Pattern.compile("\\s+"))
             .map(String::trim)
             .map(String::toInt)
         }

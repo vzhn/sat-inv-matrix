@@ -1,5 +1,5 @@
 class Context {
-  private val variables = mutableSetOf<Variable>()
+  private val variables = mutableListOf<Variable>()
   private val _gates = mutableListOf<MutableList<Gate>>()
 
   val gates get(): List<Gate> = _gates.flatten()

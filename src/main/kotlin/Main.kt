@@ -29,7 +29,7 @@ fun compute(bitWidth: Int, matrixFilePath: String, cnfFilePath: String?, solver:
   ctx.assignMatrix(a, ai)
   ctx.assignMatrix(c, SquareMatrix.identity(n))
 
-  // getting CNF
+  // getting CNF from the context
   val cnf = ctx.getCnf()
 
   println("== input ==")
